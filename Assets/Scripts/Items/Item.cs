@@ -23,6 +23,7 @@ namespace Items
         {
             _currentSlot = container.AttachItemToSlot(this);
         }
+
         public void Disappear()
         {
             OnDisappear?.Invoke(this);
@@ -33,6 +34,7 @@ namespace Items
         {
             transform.SetParent(slot.transform);
         }
+
         public void OnSlotDetach(ContainerSlot slot)
         {
             _currentSlot = null;
@@ -46,8 +48,12 @@ namespace Items
                 return;
             }
 
-            moveToSlot();
+            MoveToSlot();
+            CalculateDistance();
+        }
 
+        private void CalculateDistance()
+        {
             float distanceToTarget = Vector3.Distance(transform.position, _currentSlot.transform.position);
             if (distanceToTarget <= _moveEndThreshold)
             {
@@ -56,19 +62,20 @@ namespace Items
                 _currentSlot = null;
             }
         }
-        private void moveToSlot()
+
+        private void MoveToSlot()
         {
-            transform.position = Vector3.Lerp(
+
+            transform.SetPositionAndRotation(Vector3.Lerp(
                 transform.position,
                 _currentSlot.transform.position,
                 _itemPositionLerp * Time.deltaTime
-                );
-
-            transform.rotation = Quaternion.Lerp(
+                ),
+                Quaternion.Lerp(
                 transform.rotation,
                 _currentSlot.transform.rotation,
                 _itemRotationLerp * Time.deltaTime
-                );
+                ));
         }
     }
 }
